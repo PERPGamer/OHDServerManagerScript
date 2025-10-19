@@ -522,6 +522,8 @@ def sync_workshop_mods(mod_list_path: Path, install_dir: Path, workshop_dir: Pat
             log(f"Failed copying files from {mod_folder_src} to {dst}: {e}", logging.WARNING)
     mods_to_load_list = [folder for (_, folder) in mods]
     mods_to_load = ";".join(mods_to_load_list)
+    if config.RUNTIME.get("auto_delete_mods_after_moved", True):
+        delete_folders_in_workshop(workshop_dir)
     log(f"Mods to load string: {mods_to_load}", logging.DEBUG)
     return mods_to_load
 
@@ -970,6 +972,38 @@ def find_steam_workshop_dir() -> Optional[Path]:
 
     return None
 
+def delete_folders_in_workshop(directory_path: str):
+    """
+    Deletes all folders inside the specified directory.
+
+    Args:
+        directory_path (str): The path to the workshop folder (e.g., 'C:/OHDServers/OHDVanillaClassic/steamapps/workshop/content/736590').
+    """
+    try:
+        # Check if the provided directory exists
+        if not os.path.exists(directory_path):
+            print(f"[ERROR] The specified directory does not exist: {directory_path}")
+            return
+
+        # List all items in the directory
+        contents = os.listdir(directory_path)
+
+        # Loop through the items in the directory
+        for item in contents:
+            item_path = os.path.join(directory_path, item)
+
+            # Check if the item is a folder (we only want to delete folders, not files)
+            if os.path.isdir(item_path):
+                print(f"[INFO] Deleting folder: {item_path}")
+                shutil.rmtree(item_path)  # Delete the folder and its contents
+                print(f"[INFO] Successfully deleted folder: {item_path}")
+            else:
+                print(f"[INFO] Skipping non-folder item: {item_path}")
+
+        print("[INFO] All folders inside the specified directory have been deleted.")
+
+    except Exception as e:
+        print(f"[ERROR] An error occurred while deleting folders: {e}")
 
 def main():
     parser = build_arg_parser()

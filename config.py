@@ -53,6 +53,7 @@ RUNTIME = {
     "update_interval": 600,      # default: 600s (10 minutes)
     "init_wait_time": 30,        # default: 30s after starting server
     "restart_delay": 30,         # default: 30s after crash before restart
+    "auto_delete_mods_after_moved": True, # This way if you remove a mod on next start, it will only add the current mods to the localupdates.json
     "enable_auto_update_checks": True,
     "dry_run": False,
     "once": False,
