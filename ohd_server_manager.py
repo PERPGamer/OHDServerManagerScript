@@ -527,6 +527,9 @@ class ServerProcess:
         args = [str(exe),
                 f"{config.DEFAULT_OHD_MAP}?game={config.DEFAULT_OHD_GAMEMODE}{config.DEFAULT_OHD_PARAM}",
                 "-log",
+                f"-port={config.DEFAULT_PORT_NUM}",
+                f"-QueryPort={config.DEFAULT_QUERYPORT}",
+                f"-RCONPort={config.DEFAULT_RCONPORT}",
                 f"-MapCycle={config.DEFAULT_MAP_CYCLE}",
                 f"-SteamServerName={config.DEFAULT_STEAM_TITLE}"]
         log(f"Launching server: {' '.join(args)}", logging.DEBUG)

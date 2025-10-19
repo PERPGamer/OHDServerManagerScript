@@ -10,7 +10,7 @@ import os
 # -------------------------
 # Static constants
 # -------------------------
-DEFAULT_INSTALL_DIR = Path(r"C:\OHD Dedicated Server")
+DEFAULT_INSTALL_DIR = Path(r"C:\OHDServers\OHDVanillaClassic")
 DEFAULT_APP_ID = "950900"  # server app id
 DEFAULT_STEAM_APPID_FOR_WORKSHOP = "736590"  # workshop folder id for OHD mods
 DEFAULT_STEAMCMD_DIR = Path(r"C:\steamcmd")  # default steamcmd location
@@ -21,6 +21,9 @@ DEFAULT_LOG_FILENAME = "ohd_server_manager.log"
 DEFAULT_STEAM_USER = "anonymous"
 DEFAULT_STEAMCMD_DEL = 5  # seconds delay before syncing mods
 DEFAULT_MAP_CYCLE = "MapCycle.cfg"
+DEFAULT_PORT_NUM = 7777
+DEFAULT_QUERYPORT= 27005
+DEFAULT_RCONPORT= 7779
 DEFAULT_STEAM_TITLE = "Harsh Doorstop Dedicated Server"
 DEFAULT_DISCORD_TITLE = ""
 DEFAULT_OHD_MAP = "AAS-TestMap"
@@ -53,7 +56,7 @@ RUNTIME = {
     "enable_auto_update_checks": True,
     "dry_run": False,
     "once": False,
-    "debug": False,
+    "debug": True,
     "log_file": None,
 }
 
@@ -64,4 +67,3 @@ if "OHD_APP_ID" in os.environ:
     DEFAULT_APP_ID = os.environ["OHD_APP_ID"]
 if "OHD_DISCORD_WEBHOOK" in os.environ:
     WEBHOOK_URL_DEFAULT = os.environ["OHD_DISCORD_WEBHOOK"]
-
