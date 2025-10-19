@@ -492,7 +492,7 @@ def sync_workshop_mods(mod_list_path: Path, install_dir: Path, workshop_dir: Pat
                 contents = os.listdir(workshop_id_folder)
                 log(f"Contents of {workshop_id_folder}: {contents}")
 
-                # Get the mod folder name (there should only be one mod folder)
+                # Get the mod folder name (assuming only one mod folder inside the workshop ID folder)
                 mod_folder_name = contents[0]  # Assuming there's only one mod folder inside the workshop ID folder
                 mod_folder_src = workshop_id_folder / mod_folder_name  # Path to the actual mod folder
                 dst = server_mods_dir / mod_folder_name  # Destination: Mods\<mod_folder_name>
@@ -504,12 +504,18 @@ def sync_workshop_mods(mod_list_path: Path, install_dir: Path, workshop_dir: Pat
                         dst.mkdir(parents=True, exist_ok=True)
                         log(f"Created mod folder {dst}", logging.INFO)
 
-                    # Now copy all files from the mod folder in the source to the destination folder
-                    for file in mod_folder_src.iterdir():
-                        if file.is_file():  # Only copy files, not directories
-                            dst_file_path = dst / file.name
-                            shutil.copy(file, dst_file_path)  # Directly copy the file
-                            log(f"Copied {file} -> {dst_file_path}")
+                    # Now copy all files and subdirectories from the mod folder in the source to the destination folder
+                    for item in mod_folder_src.iterdir():
+                        # If it's a file, copy it
+                        if item.is_file():
+                            dst_file_path = dst / item.name
+                            shutil.copy(item, dst_file_path)  # Directly copy the file
+                            log(f"Copied file {item} -> {dst_file_path}")
+                        # If it's a directory, recursively copy it
+                        elif item.is_dir():
+                            dst_dir_path = dst / item.name
+                            shutil.copytree(item, dst_dir_path)  # Recursively copy the directory and its contents
+                            log(f"Copied directory {item} -> {dst_dir_path}")
 
                     log(f"Successfully updated mod {mod_folder_name} to {dst}")
                 else:
