@@ -36,7 +36,7 @@ It provides functionality for managing server updates, mod synchronization, cras
 4. Set up your server directory and mod list in `config.py`.
 5. Run the script using the available command-line arguments.
 
-*Note*: If you are using any mods, run `start.bat` first. Once the mods are downloaded, run `RunFirst.bat` to allow the script to check for mod updates.
+~~*Note*: If you are using any mods, run `start.bat` first. Once the mods are downloaded, run `RunFirst.bat` to allow the script to check for mod updates.~~
 
 ---
 
