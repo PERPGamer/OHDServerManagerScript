@@ -13,7 +13,6 @@ It provides functionality for managing server updates, mod synchronization, cras
 - **Inline Configuration**: Configurable via a `config.py` file.
 - **Automated Mod & Server Build Checks**: Periodic checks for mods and server build updates with auto-restarts.
 - **Discord Webhook Integration**: Send server status updates to Discord.
-- **Service Installation**: Install as a service on Linux (systemd) or Windows.
 
 ---
 
