@@ -20,6 +20,7 @@ import subprocess
 import sys
 import time
 import traceback
+import filecmp
 import datetime
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
@@ -475,25 +476,49 @@ def sync_workshop_mods(mod_list_path: Path, install_dir: Path, workshop_dir: Pat
     server_mods_dir = install_dir / "HarshDoorstop" / "Mods"
     if not DRY_RUN:
         server_mods_dir.mkdir(parents=True, exist_ok=True)
-    for wid, folder_name in mods:
-        src = workshop_dir / wid
-        dst = server_mods_dir
+    for wid, _ in mods:  # We don't need to use `folder_name` from `mods` anymore
+        # Define the path to the workshop ID folder
+        workshop_id_folder = workshop_dir / str(wid)
+
         if DRY_RUN:
-            log(f"[dry-run] Would copy {src} -> {dst}", logging.INFO)
+            log(f"[dry-run] Would copy from {workshop_id_folder} to destination", logging.INFO)
             continue
+
         try:
-            if dst.exists():
-                if dst.is_dir():
-                    shutil.rmtree(dst)
+            # Ensure the workshop ID folder exists
+            if workshop_id_folder.exists() and workshop_id_folder.is_dir():
+                # Log the contents of the workshop ID folder for debugging
+                contents = os.listdir(workshop_id_folder)
+                log(f"Contents of {workshop_id_folder}: {contents}")
+
+                # Get the mod folder name (there should only be one mod folder)
+                mod_folder_name = contents[0]  # Assuming there's only one mod folder inside the workshop ID folder
+                mod_folder_src = workshop_id_folder / mod_folder_name  # Path to the actual mod folder
+                dst = server_mods_dir / mod_folder_name  # Destination: Mods\<mod_folder_name>
+
+                # Check if the mod folder exists and is a directory
+                if mod_folder_src.exists() and mod_folder_src.is_dir():
+                    # If the destination mod folder doesn't exist, create it
+                    if not dst.exists():
+                        dst.mkdir(parents=True, exist_ok=True)
+                        log(f"Created mod folder {dst}", logging.INFO)
+
+                    # Now copy all files from the mod folder in the source to the destination folder
+                    for file in mod_folder_src.iterdir():
+                        if file.is_file():  # Only copy files, not directories
+                            dst_file_path = dst / file.name
+                            shutil.copy(file, dst_file_path)  # Directly copy the file
+                            log(f"Copied {file} -> {dst_file_path}")
+
+                    log(f"Successfully updated mod {mod_folder_name} to {dst}")
                 else:
-                    dst.unlink()
-            if src.exists():
-                shutil.copytree(src, dst, dirs_exist_ok=True)
-                log(f"Copied {src} -> {dst}")
+                    log(f"Mod folder {mod_folder_src} does not exist or is not a directory, skipping mod {mod_folder_name}.", logging.WARNING)
+
             else:
-                log(f"Workshop item {wid} not found at {src}", logging.WARNING)
+                log(f"Workshop ID folder {workshop_id_folder} does not exist, skipping mod {wid}.", logging.WARNING)
+
         except Exception as e:
-            log(f"Failed copying {src} -> {dst}: {e}", logging.WARNING)
+            log(f"Failed copying files from {mod_folder_src} to {dst}: {e}", logging.WARNING)
     mods_to_load_list = [folder for (_, folder) in mods]
     mods_to_load = ";".join(mods_to_load_list)
     log(f"Mods to load string: {mods_to_load}", logging.DEBUG)
