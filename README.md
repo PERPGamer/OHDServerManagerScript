@@ -1,10 +1,10 @@
-                       OHD Server Manager
-                       =========================
+OHD Server Manager
+--------------
 
 OHD Server Manager is a headless, cross-platform utility for managing your OHD (Harsh Doorstop) server. 
 It provides functionality for managing server updates, mod synchronization, crash recovery, and more.
 
----
+----------
 
 ### Features:
 ---------
