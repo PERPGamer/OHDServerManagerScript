@@ -425,6 +425,7 @@ def call_updatemods_python():
     try:
         OHDUpdateChecker.UpdateMods()
     except FileNotFoundError:
+        create_or_update_localupdates()
         log("localupdates.json not found; cannot update mods list automatically.", logging.WARNING)
     except Exception as e:
         log(f"UpdateMods failed: {e}", logging.WARNING)
@@ -865,6 +866,48 @@ def build_arg_parser():
     p.add_argument("--service-name", default="ohd_server_manager", help="Service name for systemd/Windows")
     return p
 
+def create_or_update_localupdates(path_to_use: Optional[Path] = None):
+    """
+    Creates or updates the `localupdates.json` file in the provided path or auto-detected Steam workshop folder.
+
+    Args:
+    - path_to_use: Optional path where the `localupdates.json` file will be created or updated.
+    
+    Returns:
+    - None
+    """
+    try:
+        # If no path is provided, auto-detect the Steam Workshop directory
+        if path_to_use is None:
+            path_to_use = find_steam_workshop_dir()
+
+        # If no valid path is found, print an error message
+        if path_to_use is None:
+            print("[ERROR] Could not auto-detect OHD workshop folder (736590). Provide path if needed.")
+            return
+
+        print(f"[INFO] Creating/updating localupdates.json for: {path_to_use}")
+
+        # Assuming these classes and methods exist
+        SteamAPIManager.getInstance()
+        FileManager.getInstance()
+
+        # Write or update the localupdates.json file
+        local_updates = FileManager.updateJsonFile(str(path_to_use))
+
+        # Check the result of the update
+        if local_updates:
+            print("✅ localupdates.json created/updated successfully.")
+        else:
+            print("[ERROR] Failed to create/update localupdates.json.")
+            return
+
+    except Exception as e:
+        # In case of an error, print a traceback
+        print("[ERROR] Failed creating localupdates.json:")
+        traceback.print_exc()
+        return
+
 def find_steam_workshop_dir() -> Optional[Path]:
     import platform
     home = Path.home()
@@ -935,38 +978,28 @@ def main():
     if args.create_localupdates is not None:
         provided = args.create_localupdates.strip() if isinstance(args.create_localupdates, str) else ""
         path_to_use: Optional[Path] = None
+        
+        # If a path is provided, resolve and validate it
         if provided:
             path_to_use = Path(provided).expanduser().resolve()
             if not path_to_use.exists():
                 print(f"[ERROR] Provided path not found: {path_to_use}")
                 return
         else:
+            # If no path provided, auto-detect Steam Workshop directory
             path_to_use = find_steam_workshop_dir()
 
+        # If no valid path is found, print an error message and exit
         if path_to_use is None:
             print("[ERROR] Could not auto-detect OHD workshop folder (736590). Provide path with --create-localupdates <path>")
             return
 
-        try:
-            print(f"[INFO] Creating/updating localupdates.json for: {path_to_use}")
-            SteamAPIManager.getInstance()
-            FileManager.getInstance()
+        # Call the create_or_update_localupdates function with the resolved path
+        create_or_update_localupdates(path_to_use)
 
-            # Write the localupdates.json file
-            local_updates = FileManager.updateJsonFile(str(path_to_use))
+    else:
+        print("[INFO] No action taken. Use --create-localupdates to create or update the localupdates.json file.")
 
-            if local_updates:
-                print("✅ localupdates.json created/updated successfully.")
-            else:
-                print("[ERROR] Failed to create/update localupdates.json.")
-                return
-
-            # keep console open when double-clicked? user can run from terminal instead
-            return
-        except Exception as e:
-            print("[ERROR] Failed creating localupdates.json:")
-            traceback.print_exc()
-            return
 
     install_dir = args.install_dir
     app_id = args.app_id
