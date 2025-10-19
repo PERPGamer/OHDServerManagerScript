@@ -53,7 +53,7 @@ RUNTIME = {
     "enable_auto_update_checks": True,
     "dry_run": False,
     "once": False,
-    "debug": True,
+    "debug": False,
     "log_file": None,
 }
 
@@ -64,3 +64,4 @@ if "OHD_APP_ID" in os.environ:
     DEFAULT_APP_ID = os.environ["OHD_APP_ID"]
 if "OHD_DISCORD_WEBHOOK" in os.environ:
     WEBHOOK_URL_DEFAULT = os.environ["OHD_DISCORD_WEBHOOK"]
+
