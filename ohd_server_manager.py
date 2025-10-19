@@ -466,12 +466,6 @@ def sync_workshop_mods(mod_list_path: Path, install_dir: Path, workshop_dir: Pat
     for s in range(STEAMCMD_DEL, 0, -1):
         log(f"Waiting {s}s before syncing mods...", logging.DEBUG)
         time.sleep(1)
-    if not DRY_RUN:
-        try:
-            if workshop_dir.exists():
-                shutil.rmtree(workshop_dir, ignore_errors=True)
-        except Exception as e:
-            log(f"Failed to remove {workshop_dir}: {e}", logging.WARNING)
     else:
         log("[dry-run] Would remove workshop folder", logging.DEBUG)
     for wid, _ in mods:
