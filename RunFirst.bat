@@ -1,1 +1,0 @@
-python ohd_server_manager.py --create-localupdates
