@@ -504,7 +504,7 @@ def sync_workshop_mods(mod_list_path: Path, install_dir: Path, workshop_dir: Pat
                         shutil.rmtree(dst)
                         #dst.mkdir(parents=True, exist_ok=True)
                         log(f"Created mod folder {dst}", logging.INFO)
-
+                    dst.mkdir(parents=True, exist_ok=True)
                     # Now copy all files and subdirectories from the mod folder in the source to the destination folder
                     for item in mod_folder_src.iterdir():
                         # If it's a file, copy it
@@ -1114,4 +1114,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
