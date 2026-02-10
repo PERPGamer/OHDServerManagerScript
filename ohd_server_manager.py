@@ -301,8 +301,8 @@ def call_steam_update_checker(app_id: str, install_dir: Path) -> int:
             log(f"Server files updated to buildid {remote_buildid}.", logging.INFO)
             return 1
         else:
-            log("SteamCMD did not report success — assuming up-to-date.", logging.WARNING)
-            return 0
+            log("SteamCMD did not report success — restarting.", logging.WARNING)
+            return 1
 
     except subprocess.CalledProcessError as e:
         log(f"SteamCMD failed: {e}", logging.ERROR)
@@ -1114,5 +1114,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
